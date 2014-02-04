@@ -57,6 +57,18 @@
 //  version    0.1     Created
 // *****************************************************************************/
 
+
+// *****************************************************************************/
+// file:   BeagleBone_PRU_DHT11_DHT22.p
+//
+// brief:  PRU Example to access read temp humidity sensor and store data in PRU shared Memory.
+//
+//
+//  author     Nathan Wilson
+//
+//  version    0.1     Created
+// *****************************************************************************/
+
 // r2 holds pin number
 // r3 points to gpio registers
 // r4 loop counter
@@ -74,14 +86,17 @@
 // Clear Data Out -- 0x190
 // Set Data Out -- 0x194
 
+
+// register assignments
 #define delay_reg r4
 #define low_micros r7
 #define high_micros r8
 #define current_bit r9
 #define current_offset r10
 
+// constants
 #define DHT_WAIT_MICROS 250 // wait for signal pin to change value
-#define DHT_REQ_MICROS 20000 // hold low to start request
+#define DHT_REQ_MICROS 20000 // hold low 20 ms to start request
 #define MICROSECOND_ITERS 100
 
 #define DHT_PIN_BIT 12
@@ -92,11 +107,11 @@
 #define GPIO_SET_DATA_OUT 0x194
 
 .origin 0
-.entrypoint MEMACCESS_DDR_PRUSHAREDRAM
+.entrypoint MEMACCESS_PRUSHAREDRAM
 
 #include "BeagleBone_PRU_DHT11_DHT22.hp"
 
-MEMACCESS_DDR_PRUSHAREDRAM:
+MEMACCESS_PRUSHAREDRAM:
 
     // Enable OCP master port
     LBCO      r0, CONST_PRUCFG, 4, 4 //CONST_PRUCFG aka C4
@@ -108,23 +123,6 @@ MEMACCESS_DDR_PRUSHAREDRAM:
     MOV     r0, 0x00000120
     MOV       r1, CTPPR_0
     ST32      r0, r1
-
-    // Configure the programmable pointer register for PRU0 by setting c31_pointer[15:0] 
-    // field to 0x0010.  This will make C31 point to 0x80001000 (DDR memory).
-    MOV     r0, 0x00100000
-    MOV       r1, CTPPR_1
-    ST32      r0, r1
-
-    //Load values from external DDR Memory into Registers R0/R1/R2
-    LBCO      r0, CONST_DDR, 0, 12
-
-    //Increment each register
-    ADD       r0, r0, 1
-    ADD       r1, r1, 2
-    ADD       r2, r2, 3
-
-    //Store values from read from the DDR memory into PRU shared RAM
-    SBCO      r0, CONST_PRUSHAREDRAM, 0, 12
 
     // Check that signal is high for 200us (not busy)
 

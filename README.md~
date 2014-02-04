@@ -73,4 +73,3 @@ This means Humidity is 38.0%, Temperature is 23.0 degrees C, and the checksum is
 
 I tested on a Beaglebone Black A6 with a DHT11 on pin P8_12
 You will need to enable the PRU in the device tree (by loading a device tree overlay for example) before running the code.
-
